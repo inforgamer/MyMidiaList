@@ -1,22 +1,28 @@
 package com.example.mymidialist
 
+import android.R
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,25 +89,33 @@ fun TelaPrincipal() {
                 modifier = Modifier.fillMaxSize()
             ) { paginaAtual ->
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    val abaDoMomento = titulosAbas[paginaAtual]
-                    val listaFiltrada = listaGeral.filter { it.tipo == abaDoMomento }
+                val abaDoMomento = titulosAbas[paginaAtual]
 
-                    items(listaFiltrada) { itemAtual ->
-                        ItemdeMidia(item = itemAtual)
-                    }
+                if (abaDoMomento == "Perfil") {
+                    TelaDePerfil(listaCompleta = listaGeral)
+                } else {
 
-                    if (listaFiltrada.isEmpty()) {
-                        item {
-                            Text(
-                                text = "Nada aqui",
-                                modifier = Modifier.padding(16.dp),
-                                color = Color.Gray
-                            )
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        val abaDoMomento = titulosAbas[paginaAtual]
+                        val listaFiltrada = listaGeral.filter { it.tipo == abaDoMomento }
+
+                        items(listaFiltrada) { itemAtual ->
+                            ItemdeMidia(item = itemAtual)
+                        }
+
+                        if (listaFiltrada.isEmpty()) {
+                            item {
+                                Text(
+                                    text = "Nada aqui",
+                                    modifier = Modifier.padding(16.dp),
+                                    color = Color.Gray
+                                )
+                            }
                         }
                     }
                 }
@@ -215,4 +229,82 @@ data class Midia(
     val status: String,
     val nota: Int
 )
+
+@Composable
+fun TelaDePerfil(listaCompleta: List<Midia>)
+{
+    val totalJogos = listaCompleta.count {it.tipo =="Jogos"}
+    val jogosZerados = listaCompleta.count{it.tipo == "Jogos"&& it.status == "ZERADOS"}
+
+    val totalLivros = listaCompleta.count {it.tipo =="Livros"}
+    val livrosLidos = listaCompleta.count{it.tipo == "Livros"&& it.status == "Lidos"}
+
+    val totalSeries = listaCompleta.count {it.tipo =="Series"}
+    val seriesVistas = listaCompleta.count{it.tipo == "Series"&& it.status == "Vistos"}
+
+    Column (
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+    Card(
+        modifier = Modifier.size(100.dp),
+        shape = CircleShape,
+        colors = CardDefaults.cardColors(containerColor =  Color.Black)
+    ){
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()){
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = null,
+                modifier = Modifier.size(60.dp),
+                tint = Color.White
+            )
+        }
+    }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(text = "Usuario", fontSize = 28.sp, fontWeight = FontWeight.Bold )
+        Text(text = "Teste", fontSize = 16.sp, color = Color.Gray)
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Text(text = "Estatísticas Gerais", fontWeight = FontWeight.Bold, fontSize = 20.sp )
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ){
+            ItemEstatistica("Jogos", "$jogosZerados /$totalJogos", Color(0xFFE91E63))
+            ItemEstatistica("lIVROS", "$livrosLidos /$totalLivros", Color(0xFF2196f3))
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ){
+            ItemEstatistica("Série", "$seriesVistas /$totalSeries", Color(0XFFE4CAF50))
+        }
+    }
+}
+
+@Composable
+fun ItemEstatistica(titulo:String, valor: String, cor: Color){
+    Card(
+        modifier = Modifier.size(110.dp),
+        colors = CardDefaults.cardColors(containerColor = cor.copy(alpha = 0.2f))
+    ){
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+                ){
+            Text(text = valor, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = cor)
+            Text(text = titulo, fontSize = 14.sp, color = Color.Black)
+        }
+    }
+}
+
 

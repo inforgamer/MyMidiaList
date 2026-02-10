@@ -13,7 +13,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 1. CONSTRUIR O BANCO
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java,
@@ -22,7 +21,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MyMidiaListTheme {
-                // 2. PASSAR O DAO PRA TELA PRINCIPAL
                 TelaPrincipal(dao = db.midiaDao())
             }
         }

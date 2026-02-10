@@ -13,6 +13,9 @@ interface AnimeService {
     suspend fun buscarAnimes(
         @Query("q") consulta: String
     ): RespostaDaApi
+
+    @GET("Manga")
+    suspend fun buscarMangas(@Query("q") consulta: String): RespostaDaApi
 }
 
 object RetrofitInstance {

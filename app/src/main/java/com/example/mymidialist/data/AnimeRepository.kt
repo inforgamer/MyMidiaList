@@ -5,14 +5,18 @@ import com.example.mymidialist.model.Midia
 import com.example.mymidialist.network.RetrofitInstance
 
 class AnimeRepository {
-    suspend fun buscarAnimesNaInternet(nomeDigitado: String): List<Midia> {
+    suspend fun buscarAnimesNaInternet(nomeDigitado: String, tipoDeBusca: String): List<Midia> {
         return try {
-            val resposta = RetrofitInstance.api.buscarAnimes(nomeDigitado)
+            val resposta = if (tipoDeBusca == "Livros"){
+                RetrofitInstance.api.buscarMangas(nomeDigitado)
+            } else{
+                RetrofitInstance.api.buscarAnimes(nomeDigitado)
+            }
 
             resposta.data.map { animeDetalhes ->
                 Midia(
                     titulo = animeDetalhes.titulo,
-                    tipo = "Animes",
+                tipo = if(tipoDeBusca == "Animes") "Series/Filmes" else "Livros",
                     status = if (animeDetalhes.status == "Finished Airing") "Concluído" else "Lançando",
                     nota = animeDetalhes.nota?.toInt() ?: 0,
                     comentario = "",

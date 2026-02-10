@@ -62,7 +62,7 @@ fun TelaPrincipal(dao: com.example.mymidialist.data.MidiaDao) {
         }
     }
     else {
-        val titulosAbas = listOf("Jogos", "Livros", "Séries/Filmes", "Animes", "Perfil")
+        val titulosAbas = listOf("Jogos", "Livros", "Séries/Filmes", "Perfil")
         val pagerState = rememberPagerState(pageCount = { titulosAbas.size })
         val coroutineScope = rememberCoroutineScope()
 

@@ -86,4 +86,4 @@ Este projeto utiliza a **Jikan API** (Unofficial MyAnimeList API).
 
 ## 👨‍💻 Autor
 
-Desenvolvido com tempo e café por **Infor**.
+Desenvolvido com tempo e café por **Infor** e como sub designer **Lucas1Black**.

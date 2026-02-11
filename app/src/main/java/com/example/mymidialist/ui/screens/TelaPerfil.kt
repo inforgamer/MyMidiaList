@@ -1,11 +1,13 @@
 package com.example.mymidialist.ui.screens
 
+import android.service.autofill.OnClickAction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,9 +16,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mymidialist.model.Midia
 import com.example.mymidialist.ui.components.ItemEstatistica
+import kotlinx.coroutines.coroutineScope
+import com.example.mymidialist.data.MidiaDao
+import kotlinx.coroutines.launch
 
 @Composable
-fun TelaDePerfil(listaCompleta: List<Midia>) {
+fun TelaDePerfil(listaCompleta: List<Midia>,dao: MidiaDao) {
+
+    val coroutineScope = rememberCoroutineScope ()
     val totalJogos = listaCompleta.count { it.tipo == "Jogos" }
     val jogosZerados = listaCompleta.count { it.tipo == "Jogos" && it.status == "Zerado" }
     val totalLivros = listaCompleta.count { it.tipo == "Livros" }
@@ -44,5 +51,15 @@ fun TelaDePerfil(listaCompleta: List<Midia>) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             ItemEstatistica("Séries", "$seriesVistas / $totalSeries", Color(0xFF4CAF50))
         }
+        Button(onClick = {
+            coroutineScope.launch {
+                dao.deletarTudo()
+            }
+        },
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+        ){
+            Text(text = "Resetar Banco", color = Color.White)
+        }
     }
+
 }

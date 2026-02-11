@@ -91,7 +91,7 @@ fun TelaPrincipal(dao: com.example.mymidialist.data.MidiaDao) {
                 ) { paginaAtual ->
                     val abaDoMomento = titulosAbas[paginaAtual]
                     if (abaDoMomento == "Perfil") {
-                        TelaDePerfil(listaCompleta = listaGeral)
+                        TelaDePerfil(listaCompleta = listaGeral,dao = dao)
                     } else {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
@@ -122,6 +122,12 @@ fun TelaPrincipal(dao: com.example.mymidialist.data.MidiaDao) {
 
             // --- JANELA 2: CONFIGURAR O ITEM ---
             if (itemParaAdicionar != null) {
+
+                val tipoCorrigido = when(itemParaAdicionar!!.tipo){
+                    "Animes", "Anime" ->"Séries/Filmes"
+                    "Livros", "Livro", "Manga", "Mangás", "Novel", "Light Novel" -> "Livros"
+                    else -> itemParaAdicionar!!.tipo
+                }
                 AlertDialog(
                     onDismissRequest = { itemParaAdicionar = null },
                     title = { Text(text = "Adicionar ${itemParaAdicionar!!.titulo}") },
@@ -130,7 +136,7 @@ fun TelaPrincipal(dao: com.example.mymidialist.data.MidiaDao) {
                             Text("Qual a situação de ${itemParaAdicionar!!.titulo}?")
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            val opcoesStatus = when (itemParaAdicionar!!.tipo) {
+                            val opcoesStatus = when (tipoCorrigido) {
                                 "Jogos" -> listOf("Jogando", "Zerado", "Na fila", "Dropado")
                                 "Livros" -> listOf("Lendo", "Lido", "Na fila", "Abandonado")
                                 "Séries/Filmes" -> listOf("Vendo", "Concluído", "Planejando", "Esquecido")
@@ -178,6 +184,7 @@ fun TelaPrincipal(dao: com.example.mymidialist.data.MidiaDao) {
                                 val novoItem = itemParaAdicionar!!.copy(
                                     status = statusParaAdicionar,
                                     nota = notaParaAdicionar,
+                                    tipo = tipoCorrigido,
                                     comentario = ""
                                 )
 

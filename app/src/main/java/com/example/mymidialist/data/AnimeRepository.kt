@@ -16,7 +16,7 @@ class AnimeRepository {
             resposta.data.map { animeDetalhes ->
                 Midia(
                     titulo = animeDetalhes.titulo,
-                tipo = if(tipoDeBusca == "Animes") "Series/Filmes" else "Livros",
+                tipo = if(tipoDeBusca == "Animes") "Séries/Filmes" else "Livros",
                     status = if (animeDetalhes.status == "Finished Airing") "Concluído" else "Lançando",
                     nota = animeDetalhes.nota?.toInt() ?: 0,
                     comentario = "",

@@ -34,9 +34,10 @@ fun TelaBusca(
     val coroutineScope = rememberCoroutineScope()
 
     var termoBusca by remember { mutableStateOf("") }
-    var filtroSelecionado by remember { mutableStateOf("Animes") }
+    var filtroSelecionado by remember { mutableStateOf("Series") }
     var resultados by remember { mutableStateOf<List<Midia>>(emptyList()) }
     var carregando by remember { mutableStateOf(false) }
+    var jobDeBusca by remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
 
     Scaffold(
         topBar = {
@@ -49,13 +50,7 @@ fun TelaBusca(
                             value = termoBusca,
                             onValueChange = { novoTexto ->
                                 termoBusca = novoTexto
-                                if (novoTexto.length > 3) {
-                                    carregando = true
-                                    coroutineScope.launch {
-                                        resultados = repository.buscarAnimesNaInternet(novoTexto, filtroSelecionado)
-                                        carregando = false
-                                    }
-                                }
+                                jobDeBusca?.cancel()
                             },
                             placeholder = { Text("Digite o nome") },
                             singleLine = true,
@@ -81,6 +76,15 @@ fun TelaBusca(
                         selected = filtroSelecionado == "Series",
                         onClick = {
                             filtroSelecionado = "Series"
+                            resultados = emptyList()
+                            if(termoBusca.length >= 3)
+                            {
+                                carregando = true
+                                coroutineScope.launch {
+                                    resultados = repository.buscarAnimesNaInternet(termoBusca, "Series")
+                                    carregando = false
+                                }
+                            }
                         },
                         label = { Text("Series") },
                         leadingIcon = if (filtroSelecionado == "Series") {
@@ -93,7 +97,16 @@ fun TelaBusca(
                     FilterChip(
                         selected = filtroSelecionado == "Livros",
                         onClick = {
-                            filtroSelecionado = "Livros" // CORRIGIDO: Era "Livro", mudei para "Livros"
+                            filtroSelecionado = "Livros"
+                            resultados = emptyList()
+                            if(termoBusca.length >= 3)
+                            {
+                                carregando = true
+                                coroutineScope.launch {
+                                    resultados = repository.buscarAnimesNaInternet(termoBusca, "Livros")
+                                    carregando = false
+                                }
+                            }
                         },
                         label = { Text("Livros") },
                         leadingIcon = if (filtroSelecionado == "Livros") {

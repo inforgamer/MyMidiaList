@@ -21,10 +21,9 @@ fun ItemdeMidia(item: Midia) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = item.titulo, fontSize = 22.sp, color = Color.Black, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = "Tipo: ${item.tipo}", color = Color.Black)
             Text(text = "Status: ${item.status}", color = Color.Black)
             if (item.nota > 0) {
-                Text(text = "Nota: ${item.nota}/10", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Text(text = "Nota: ${item.nota}/5", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
             }
         }
     }

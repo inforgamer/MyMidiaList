@@ -15,4 +15,7 @@ interface MidiaDao {
     suspend fun inserir(midia: Midia)
 
     @Delete fun deletar(midia: Midia)
+
+    @Query("DELETE FROM tabela_midia")
+    suspend fun deletarTudo()
 }

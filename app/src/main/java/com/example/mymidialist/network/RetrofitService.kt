@@ -3,7 +3,6 @@ package com.example.mymidialist.network
 import com.example.mymidialist.model.RespostaDaApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -14,7 +13,7 @@ interface AnimeService {
         @Query("q") consulta: String
     ): RespostaDaApi
 
-    @GET("Manga")
+    @GET("v4/manga")
     suspend fun buscarMangas(@Query("q") consulta: String): RespostaDaApi
 }
 

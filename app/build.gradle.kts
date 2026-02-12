@@ -1,10 +1,21 @@
+import java.util.Properties
+import java.io.FileInputStream
+
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp") version "2.0.21-1.0.28"
 }
-
+// Cria e carrega as propriedades
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { stream ->
+        localProperties.load(stream)
+    }
+}
 android {
     namespace = "com.example.mymidialist"
     compileSdk = 36
@@ -17,6 +28,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        val id = localProperties.getProperty("IGDB_CLIENT_ID") ?: ""
+        val secret = localProperties.getProperty("IGDB_CLIENT_SECRET") ?: ""
+
+        buildConfigField("String", "IGDB_ID", "\"$id\"")
+        buildConfigField("String", "IGDB_SECRET", "\"$secret\"")
     }
 
     buildTypes {
@@ -36,6 +52,7 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }

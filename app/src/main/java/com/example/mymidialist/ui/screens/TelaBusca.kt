@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.mymidialist.model.Midia
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,28 +30,33 @@ fun TelaBusca(
     onVoltar: () -> Unit,
     onItemSelecionado: (Midia) -> Unit
 ) {
-    val repository = remember { com.example.mymidialist.data.AnimeRepository() }
-    val coroutineScope = rememberCoroutineScope()
+    val repository = remember { com.example.mymidialist.data.Repository() }
 
     var termoBusca by remember { mutableStateOf("") }
     var filtroSelecionado by remember { mutableStateOf("Series") }
     var resultados by remember { mutableStateOf<List<Midia>>(emptyList()) }
     var carregando by remember { mutableStateOf(false) }
-    var jobDeBusca by remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
+
+    LaunchedEffect(termoBusca, filtroSelecionado) {
+        if (termoBusca.length >= 3) {
+            delay(800)
+            carregando = true
+            resultados = repository.buscarAnimesNaInternet(termoBusca, filtroSelecionado)
+            carregando = false
+        } else {
+            resultados = emptyList()
+            carregando = false
+        }
+    }
 
     Scaffold(
         topBar = {
-            Column(
-                modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)
-            ) {
+            Column(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
                 TopAppBar(
                     title = {
                         OutlinedTextField(
                             value = termoBusca,
-                            onValueChange = { novoTexto ->
-                                termoBusca = novoTexto
-                                jobDeBusca?.cancel()
-                            },
+                            onValueChange = { termoBusca = it },
                             placeholder = { Text("Digite o nome") },
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
@@ -69,49 +74,34 @@ fun TelaBusca(
                     }
                 )
 
-                Row(
-                    modifier = Modifier.padding(start = 16.dp, top = 0.dp, bottom = 8.dp) // Ajustei o top pra 0 pois já está embaixo
-                ) {
+                Row(modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)) {
                     FilterChip(
                         selected = filtroSelecionado == "Series",
-                        onClick = {
-                            filtroSelecionado = "Series"
-                            resultados = emptyList()
-                            if(termoBusca.length >= 3)
-                            {
-                                carregando = true
-                                coroutineScope.launch {
-                                    resultados = repository.buscarAnimesNaInternet(termoBusca, "Series")
-                                    carregando = false
-                                }
-                            }
-                        },
-                        label = { Text("Series") },
-                        leadingIcon = if (filtroSelecionado == "Series") {
-                            { Icon(Icons.Default.Check, contentDescription = null) }
-                        } else null
+                        onClick = { filtroSelecionado = "Series"; resultados = emptyList() },
+                        label = { Text("Séries") },
+                        leadingIcon = if (filtroSelecionado == "Series") { { Icon(Icons.Default.Check, null) } } else null
                     )
-
+                    Spacer(modifier = Modifier.width(8.dp))
+                    FilterChip(
+                        selected = filtroSelecionado == "Jogos",
+                        onClick = { filtroSelecionado = "Jogos"; resultados = emptyList() },
+                        label = { Text("Jogos") },
+                        leadingIcon = if (filtroSelecionado == "Jogos") { { Icon(Icons.Default.Check, null) } } else null
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
 
                     FilterChip(
+                        selected = filtroSelecionado == "Mangas",
+                        onClick = { filtroSelecionado = "Mangas"; resultados = emptyList() },
+                        label = { Text("Mangas") },
+                        leadingIcon = if (filtroSelecionado == "Mangas") { { Icon(Icons.Default.Check, null) } } else null
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    FilterChip(
                         selected = filtroSelecionado == "Livros",
-                        onClick = {
-                            filtroSelecionado = "Livros"
-                            resultados = emptyList()
-                            if(termoBusca.length >= 3)
-                            {
-                                carregando = true
-                                coroutineScope.launch {
-                                    resultados = repository.buscarAnimesNaInternet(termoBusca, "Livros")
-                                    carregando = false
-                                }
-                            }
-                        },
+                        onClick = { filtroSelecionado = "Livros"; resultados = emptyList() },
                         label = { Text("Livros") },
-                        leadingIcon = if (filtroSelecionado == "Livros") {
-                            { Icon(Icons.Default.Check, contentDescription = null) }
-                        } else null
+                        leadingIcon = if (filtroSelecionado == "Livros") { { Icon(Icons.Default.Check, null) } } else null
                     )
                 }
                 Divider()
@@ -119,9 +109,7 @@ fun TelaBusca(
         }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues).padding(16.dp)) {
-            if (carregando) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            }
+            if (carregando) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
@@ -130,32 +118,25 @@ fun TelaBusca(
             ) {
                 items(resultados) { midia ->
                     Card(
-                        modifier = Modifier
-                            .height(180.dp)
-                            .clickable { onItemSelecionado(midia) },
+                        modifier = Modifier.height(180.dp).clickable { onItemSelecionado(midia) },
                         elevation = CardDefaults.cardElevation(4.dp)
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             AsyncImage(
                                 model = midia.imageUrl,
-                                contentDescription = null,
+                                contentDescription = midia.titulo,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize()
                             )
-                            Box(modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.Black.copy(alpha = 0.4f))
-                            )
+                            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.4f)))
 
                             Text(
                                 text = midia.titulo,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 12.sp,
+                                fontSize = 11.sp,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier
-                                    .align(Alignment.BottomStart)
-                                    .padding(8.dp),
+                                modifier = Modifier.align(Alignment.BottomStart).padding(8.dp),
                                 color = Color.White
                             )
                         }

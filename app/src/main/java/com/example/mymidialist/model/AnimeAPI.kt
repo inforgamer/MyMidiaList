@@ -11,7 +11,12 @@ data class AnimeDetalhes(
     @SerializedName("title") val titulo: String,
     @SerializedName("status") val status: String,
     @SerializedName("score") val nota: Double?,
-    @SerializedName("images") val imagens: AnimeImagens
+    @SerializedName("images") val imagens: AnimeImagens,
+    @SerializedName("genres") val genres: List<Genero>?,
+    @SerializedName("type") val type: String?
+)
+data class Genero(
+    @SerializedName("name") val name: String
 )
 
 data class AnimeImagens(

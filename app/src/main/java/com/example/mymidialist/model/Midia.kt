@@ -12,5 +12,6 @@ data class Midia(
     val status: String,
     val nota: Int = 0,
     val comentario: String = "",
-    val imageUrl: String = ""
+    val imageUrl: String = "",
+    val description: String = ""
 )

@@ -1,7 +1,5 @@
 package com.example.mymidialist.network
 
-import com.example.mymidialist.model.RespostaDaApi
-import com.example.mymidialist.model.RespostaGoogleBooks
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET

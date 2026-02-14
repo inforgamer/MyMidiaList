@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp") version "2.0.21-1.0.28"
 }
-// Cria e carrega as propriedades
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
@@ -28,11 +27,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        val id = localProperties.getProperty("IGDB_CLIENT_ID") ?: ""
-        val secret = localProperties.getProperty("IGDB_CLIENT_SECRET") ?: ""
+        buildConfigField("String", "RAWG_KEY", "\"${localProperties.getProperty("RAWG_KEY")}\"")
+        buildConfigField("String", "OMDB_KEY", "\"${localProperties.getProperty("OMDB_KEY")}\"")
 
-        buildConfigField("String", "IGDB_ID", "\"$id\"")
-        buildConfigField("String", "IGDB_SECRET", "\"$secret\"")
     }
 
     buildTypes {
@@ -58,6 +55,8 @@ android {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+    implementation("com.google.mlkit:translate:17.0.3")
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)

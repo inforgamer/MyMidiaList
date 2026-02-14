@@ -1,4 +1,4 @@
-package com.example.mymidialist.model
+package com.example.mymidialist.network
 
 import com.google.gson.annotations.SerializedName
 
@@ -13,7 +13,8 @@ data class AnimeDetalhes(
     @SerializedName("score") val nota: Double?,
     @SerializedName("images") val imagens: AnimeImagens,
     @SerializedName("genres") val genres: List<Genero>?,
-    @SerializedName("type") val type: String?
+    @SerializedName("type") val type: String?,
+    @SerializedName("synopsis") val sinopse: String?
 )
 data class Genero(
     @SerializedName("name") val name: String

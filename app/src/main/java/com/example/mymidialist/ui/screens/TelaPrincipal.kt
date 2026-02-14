@@ -37,7 +37,6 @@ fun TelaPrincipal(dao: com.example.mymidialist.data.MidiaDao) {
     val context = LocalContext.current
     val listaGeral by dao.getTodasMidias().collectAsState(initial = emptyList())
 
-    // --- LÓGICA DE NAVEGAÇÃO ---
 
     if (midiaSelecionada != null) {
         TelaDetalhe(midia = midiaSelecionada!!, onVoltar = { midiaSelecionada = null })
@@ -62,7 +61,7 @@ fun TelaPrincipal(dao: com.example.mymidialist.data.MidiaDao) {
         }
     }
     else {
-        val titulosAbas = listOf("Jogos", "Livros", "Séries/Filmes", "Perfil")
+        val titulosAbas = listOf("Jogos", "Livros", "Séries", "Filmes", "Perfil")
         val pagerState = rememberPagerState(pageCount = { titulosAbas.size })
         val coroutineScope = rememberCoroutineScope()
 
@@ -75,7 +74,8 @@ fun TelaPrincipal(dao: com.example.mymidialist.data.MidiaDao) {
                 }
             }
         ) { paddingValues ->
-            Column(modifier = Modifier.padding(paddingValues)) {
+            Column(modifier = Modifier
+                .padding(paddingValues)) {
                 TabRow(selectedTabIndex = pagerState.currentPage) {
                     titulosAbas.forEachIndexed { index, titulo ->
                         Tab(
@@ -120,11 +120,10 @@ fun TelaPrincipal(dao: com.example.mymidialist.data.MidiaDao) {
                 }
             }
 
-            // --- JANELA 2: CONFIGURAR O ITEM ---
             if (itemParaAdicionar != null) {
 
                 val tipoCorrigido = when(itemParaAdicionar!!.tipo){
-                    "Animes", "Anime" ->"Séries/Filmes"
+                    "Animes", "Anime" ->"Séries"
                     "Livros", "Livro", "Manga", "Mangás", "Novel", "Light Novel" -> "Livros"
                     else -> itemParaAdicionar!!.tipo
                 }
@@ -139,7 +138,7 @@ fun TelaPrincipal(dao: com.example.mymidialist.data.MidiaDao) {
                             val opcoesStatus = when (tipoCorrigido) {
                                 "Jogos" -> listOf("Jogando", "Zerado", "Na fila", "Dropado")
                                 "Livros" -> listOf("Lendo", "Lido", "Na fila", "Abandonado")
-                                "Séries/Filmes" -> listOf("Vendo", "Concluído", "Planejando", "Esquecido")
+                                "Séries" -> listOf("Vendo", "Concluído", "Planejando", "Esquecido")
                                 else -> listOf("Em andamento", "Concluido")
                             }
 

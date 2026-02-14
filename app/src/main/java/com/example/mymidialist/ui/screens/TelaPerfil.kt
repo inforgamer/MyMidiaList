@@ -50,6 +50,8 @@ fun TelaDePerfil(listaCompleta: List<Midia>,dao: MidiaDao) {
         Spacer(modifier = Modifier.height(16.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             ItemEstatistica("Séries", "$seriesVistas / $totalSeries", Color(0xFF4CAF50))
+            ItemEstatistica("Filmes", "$seriesVistas / $totalSeries", Color(0xFF9C27B0))
+
         }
         Button(onClick = {
             coroutineScope.launch {

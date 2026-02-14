@@ -1,26 +1,22 @@
 package com.example.mymidialist.data
 
 import android.util.Log
-import com.example.mymidialist.BuildConfig // <--- Importante
+import androidx.room.util.query
+import com.example.mymidialist.BuildConfig
 import com.example.mymidialist.model.Midia
 import com.example.mymidialist.network.GoogleBooksInstance
-import com.example.mymidialist.network.IGDBInstance
+import com.example.mymidialist.network.RawgService
 import com.example.mymidialist.network.RetrofitInstance
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
-// MUDAMOS O NOME AQUI PARA "Repository" PARA CORRIGIR O ERRO NA TELA BUSCA
+
 class Repository {
 
-    companion object {
-        private const val CLIENT_ID = BuildConfig.IGDB_ID
-        private const val CLIENT_SECRET = BuildConfig.IGDB_SECRET
-
-        private var tokenAtual: String = ""
-    }
 
     suspend fun buscarAnimesNaInternet(nomeDigitado: String, tipoDeBusca: String): List<Midia> {
 
+        // Mangas
         if (tipoDeBusca == "Mangas") {
             return try {
                 val respostaJikan = RetrofitInstance.api.buscarMangas(nomeDigitado)
@@ -34,7 +30,8 @@ class Repository {
                         status = if (mangaDetalhes.status == "Finished") "Concluído" else "Lançando",
                         nota = mangaDetalhes.nota?.toInt() ?: 0,
                         comentario = "",
-                        imageUrl = mangaDetalhes.imagens.jpg.imageUrl
+                        imageUrl = mangaDetalhes.imagens.jpg.imageUrl,
+                        description = mangaDetalhes.sinopse?.replace("[Written by MAL Rewrite]", "")?.trim() ?: "Sem sinopse."
                     )
                 }
             } catch (e: Exception) {
@@ -42,38 +39,56 @@ class Repository {
                 emptyList()
             }
 
-        } else if (tipoDeBusca == "Jogos") {
+            // SÉRIES
+        } else if (tipoDeBusca == "Séries") {
             return try {
-                if (tokenAtual.isEmpty()) {
-                    val respToken = IGDBInstance.api.obterToken(CLIENT_ID, CLIENT_SECRET)
-                    tokenAtual = "Bearer ${respToken.accessToken}"
-                }
-
-                val queryText = "search \"$nomeDigitado\"; fields name, cover.url, total_rating, first_release_date; limit 20;"
-                val body = queryText.toRequestBody("text/plain".toMediaTypeOrNull())
-
-                val games = IGDBInstance.api.buscarGames(CLIENT_ID, tokenAtual, body)
-
-                games.map { game ->
-                    val capaHd = game.cover?.url?.replace("//", "https://")
-                        ?.replace("t_thumb", "t_cover_big")
-                        ?: ""
-
+                val respostaJikan = RetrofitInstance.api.buscarAnimes(nomeDigitado)
+                respostaJikan.data.filter { anime ->
+                    val generos = anime.genres?.map { it.name } ?: emptyList()
+                    !generos.contains("Hentai") && !generos.contains("Erotica")
+                }.map { animeDetalhes ->
                     Midia(
-                        titulo = game.name,
-                        tipo = "Jogos",
-                        status = "Jogando",
-                        nota = game.total_rating?.toInt() ?: 0,
+                        titulo = animeDetalhes.titulo,
+                        tipo = "Séries",
+                        status = if (animeDetalhes.status == "Finished Airing") "Concluído" else "Lançando",
+                        nota = animeDetalhes.nota?.toInt() ?: 0,
                         comentario = "",
-                        imageUrl = capaHd
+                        imageUrl = animeDetalhes.imagens.jpg.imageUrl,
+                        description = animeDetalhes.sinopse?.replace("[Written by MAL Rewrite]", "")?.trim() ?: "Sem sinopse."
                     )
                 }
             } catch (e: Exception) {
-                if (e.message?.contains("401") == true) tokenAtual = ""
-                Log.e("IGDB_ERRO", "Erro na busca: ${e.message}")
+                Log.e("ErroAPI", "Erro ao buscar Animes: ${e.message}")
                 emptyList()
             }
 
+            // jogos
+        } else if (tipoDeBusca == "Jogos") {
+        return try {
+            val apiKey = BuildConfig.RAWG_KEY
+
+            val resposta = com.example.mymidialist.network.RawgInstance.api.buscarGames(
+                apiKey = apiKey,
+                query  = nomeDigitado
+            )
+
+            resposta.results.map { game ->
+                Midia(
+                    titulo = game.name,
+                    tipo = "Jogos",
+                    status = "",
+                    nota = game.metacritic?: 0,
+                    comentario = "",
+                    imageUrl = game.background_image ?:"",
+                    description = "Lançado em: ${game.released ?: "Data desconhecida"}"
+                )
+            }
+        } catch (e: Exception) {
+                Log.e("RAWG_ERRO", "Erro na busca: ${e.message}")
+                emptyList()
+            }
+
+            // livros
         } else if (tipoDeBusca == "Livros") {
             return try {
                 val buscaFormatada = nomeDigitado.trim().replace(" ", "+")
@@ -87,7 +102,8 @@ class Repository {
                         status = "Lendo",
                         nota = 0,
                         comentario = "",
-                        imageUrl = urlCapa
+                        imageUrl = urlCapa,
+                        description = livro.volumeInfo.description ?: "Sem descrição."
                     )
                 } ?: emptyList()
             } catch (e: Exception) {
@@ -105,11 +121,12 @@ class Repository {
                         status = if (animeDetalhes.status == "Finished Airing") "Concluído" else "Lançando",
                         nota = animeDetalhes.nota?.toInt() ?: 0,
                         comentario = "",
-                        imageUrl = animeDetalhes.imagens.jpg.imageUrl
+                        imageUrl = animeDetalhes.imagens.jpg.imageUrl,
+                        description = animeDetalhes.sinopse?.replace("[Written by MAL Rewrite]", "")?.trim() ?: "Sem sinopse."
                     )
                 }
             } catch (e: Exception) {
-                Log.e("ErroAPI", "Erro ao buscar Series: ${e.message}")
+                Log.e("ErroAPI", "Erro ao buscar Series (Else): ${e.message}")
                 emptyList()
             }
         }

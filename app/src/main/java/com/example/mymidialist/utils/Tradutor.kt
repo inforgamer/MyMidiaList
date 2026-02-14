@@ -21,14 +21,12 @@ object Tradutor {
                 .requireWifi()
                 .build()
 
-            // Baixa o modelo se necessário
             englishToPortugueseTranslator.downloadModelIfNeeded(conditions).await()
 
-            // Traduz
             englishToPortugueseTranslator.translate(textoOriginal).await()
         } catch (e: Exception) {
             e.printStackTrace()
-            textoOriginal // Devolve em inglês se der erro
+            textoOriginal
         }
     }
 }

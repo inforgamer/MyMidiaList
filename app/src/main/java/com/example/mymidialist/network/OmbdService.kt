@@ -1,24 +1,22 @@
 package com.example.mymidialist.network
 
-import android.R
-import androidx.appcompat.widget.DialogTitle
-import com.google.android.gms.common.api.internal.ApiKey
 import com.google.gson.annotations.SerializedName
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface OmbdService{
+interface OmdbService {
     @GET("/")
     suspend fun buscarFilmesESeries(
         @Query("apikey") apiKey: String,
-        @Query("s") query: String
-    ): RespostaOmbd
+        @Query("s") query: String,
+        @Query("type") tipo: String
+    ): RespostaOmdb
 }
 
-data class RespostaOmbd(
-    @SerializedName("Search") val shearch: List<ItemOmdb>?
+data class RespostaOmdb(
+    @SerializedName("Search") val search: List<ItemOmdb>?
 )
 
 data class ItemOmdb(
@@ -26,14 +24,14 @@ data class ItemOmdb(
     @SerializedName("Year") val year: String,
     @SerializedName("Type") val type: String,
     @SerializedName("Poster") val poster: String
-
 )
-object OmdbInstace{
-    val api: OmbdService by lazy {
+
+object OmdbInstance {
+    val api: OmdbService by lazy {
         Retrofit.Builder()
-            .baseUrl("https://www.api.com/")
+            .baseUrl("https://www.omdbapi.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(OmbdService::class.java)
+            .create(OmdbService::class.java)
     }
 }

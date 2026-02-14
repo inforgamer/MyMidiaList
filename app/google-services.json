@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "350574678469",
+    "project_id": "kiwi-40bf5",
+    "storage_bucket": "kiwi-40bf5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:350574678469:android:d632c9fbb2c625aa43bbac",
+        "android_client_info": {
+          "package_name": "com.example.mymidialist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyvn_qbF9cxix8d22ZJok9J1cIDg6Volo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

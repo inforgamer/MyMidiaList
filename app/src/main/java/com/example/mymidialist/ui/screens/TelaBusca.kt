@@ -2,10 +2,12 @@ package com.example.mymidialist.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -33,7 +35,7 @@ fun TelaBusca(
     val repository = remember { com.example.mymidialist.data.Repository() }
 
     var termoBusca by remember { mutableStateOf("") }
-    var filtroSelecionado by remember { mutableStateOf("Series") }
+    var filtroSelecionado by remember { mutableStateOf("Séries") }
     var resultados by remember { mutableStateOf<List<Midia>>(emptyList()) }
     var carregando by remember { mutableStateOf(false) }
 
@@ -74,12 +76,23 @@ fun TelaBusca(
                     }
                 )
 
-                Row(modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)) {
+                Row(modifier = Modifier
+                    .padding(start = 16.dp, bottom = 8.dp)
+                    .horizontalScroll(rememberScrollState())
+                ) {
                     FilterChip(
-                        selected = filtroSelecionado == "Series",
-                        onClick = { filtroSelecionado = "Series"; resultados = emptyList() },
+                        selected = filtroSelecionado == "Séries",
+                        onClick = { filtroSelecionado = "Séries"; resultados = emptyList() },
                         label = { Text("Séries") },
-                        leadingIcon = if (filtroSelecionado == "Series") { { Icon(Icons.Default.Check, null) } } else null
+                        leadingIcon = if (filtroSelecionado == "Séries") { { Icon(Icons.Default.Check, null) } } else null
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    FilterChip(
+                        selected = filtroSelecionado == "Filmes",
+                        onClick = { filtroSelecionado = "Filmes"; resultados = emptyList() },
+                        label = { Text("Filmes") },
+                        leadingIcon = if (filtroSelecionado == "Filmes") { { Icon(Icons.Default.Check, null) } } else null
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     FilterChip(
@@ -89,7 +102,13 @@ fun TelaBusca(
                         leadingIcon = if (filtroSelecionado == "Jogos") { { Icon(Icons.Default.Check, null) } } else null
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-
+                    FilterChip(
+                        selected = filtroSelecionado == "Animes",
+                        onClick = { filtroSelecionado = "Animes"; resultados = emptyList() },
+                        label = { Text("Animes") },
+                        leadingIcon = if (filtroSelecionado == "Animes") { { Icon(Icons.Default.Check, null) } } else null
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     FilterChip(
                         selected = filtroSelecionado == "Mangas",
                         onClick = { filtroSelecionado = "Mangas"; resultados = emptyList() },

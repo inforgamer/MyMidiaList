@@ -75,9 +75,6 @@ Este projeto utiliza a **Jikan API** (Unofficial MyAnimeList API).
 ---
 
 ## 🚧 Melhorias Futuras
-
-- [ ] Adicionar API para Jogos (IGDB).
-- [ ] Criar tela de detalhes com sinopse completa.
 - [ ] Adicionar sistema de backup na nuvem (Firebase).
 - [ ] Modo Escuro/Claro automático.
 - [ ] Porte para IOS
